@@ -5,6 +5,11 @@ import pandas as pd
 
 import os
 
+@st.cache_data
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode("utf-8")
+
 def next_one(mark):
     st.session_state.df.at[st.session_state.idx, "status"] = mark
     st.session_state.idx += 1
@@ -46,3 +51,10 @@ if st.session_state.read:
     else:
         st.write("Finished Task")
         st.dataframe(st.session_state.df)
+        csv = convert_df(st.session_state.df[st.session_state.df.status.isin(["r", "i"])])
+        st.download_button(
+            label="Download data as CSV",
+            data=csv,
+            file_name="checked_{}".format(st.session_state.f_name),
+            mime="text/csv",
+        )
