@@ -68,7 +68,7 @@ if st.session_state.read:
     else:
         st.write("Finished Task")
         st.dataframe(st.session_state.df)
-        csv = convert_df(st.session_state.df[st.session_state.df.status.isin(["r", "i"])])
+        csv = convert_df(st.session_state.df[st.session_state.df.status.isin(["R", "I"])])
         st.download_button(
             label="Download data as CSV",
             data=csv,
