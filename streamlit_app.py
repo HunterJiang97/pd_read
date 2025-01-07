@@ -152,7 +152,7 @@ st.divider()
 focus_word = ["large language model", "reinforcement learning", "interpretability", "explainability", "agent", "diffusion"]
 except_word = ["autonomous vehicle", "computer vision", "robots"]
 if st.session_state.read:
-    if st.session_state.idx < len(st.session_state.df):
+    if st.session_state.idx < len(st.session_state.df) - 1:
         col1, col2, col3, col4, col5 = st.columns(5)
         with col1:
             if st.button("Pass"):
