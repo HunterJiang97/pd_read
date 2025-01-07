@@ -168,7 +168,7 @@ if st.session_state.read:
                 st.session_state.idx -= 1
         with col5:
             if st.button("Save"):
-                st.session_state.df.to_csv("data_marked/{}".format(st.session_state.f_name))
+                #st.session_state.df.to_csv("data_marked/{}".format(st.session_state.f_name))
                 csv = convert_df(st.session_state.df)
                 st.download_button(
                     label="Download current file as CSV",
