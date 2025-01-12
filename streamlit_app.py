@@ -101,7 +101,7 @@ def check_then_scrape(category, start, end):
     scraper = arxivscraper.Scraper(
         category = category, 
         date_from = start,
-        date_until = end,
+        #date_until = end, # put it as today to get recend papers.
         t = 5)
 
     # scrape
@@ -131,7 +131,10 @@ if st.button("Download this Date"):
     st.session_state.f_name = date
     st.session_state.df = check_then_scrape("cs", date, date1)
     #st.session_state.df = st.session_state.df[(st.session_state.df.created == date) | (st.session_state.df.updated == date)]
+    print(len(st.session_state.df))
+    print(st.session_state.df.head())
     st.session_state.df = st.session_state.df[st.session_state.df.created == date]
+    print(len(st.session_state.df))
     st.session_state.df.reset_index(drop = True, inplace = True)
     st.session_state.df["status"] = None
     #st.dataframe(st.session_state.df)
@@ -176,7 +179,8 @@ if st.session_state.read:
                     file_name="tmp_checked_{}.csv".format(st.session_state.f_name),
                     mime="text/csv",
                 )
-                send_email(date, csv, tmp = True)
+                if len(st.session_state.df) > 0:
+                    send_email(date, csv, tmp = True)
         abs = st.session_state.df.at[st.session_state.idx, "abstract"]
         for fw in focus_word:
             abs = abs.replace(fw, ':red[{}]'.format(fw))
@@ -195,4 +199,5 @@ if st.session_state.read:
             file_name="checked_{}.csv".format(st.session_state.f_name),
             mime="text/csv",
         )
-        send_email(date, csv)
+        if len(st.session_state.df) > 0:
+            send_email(date, csv)
