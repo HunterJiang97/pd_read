@@ -13,32 +13,6 @@ import arxivscraper
 import time
 import os
 
-focus_word = [
-    "reinforcement learning", 
-    "interpretability", 
-    "explainability", 
-    "agent",
-    "time series",
-    "survey"
-    ]
-except_word = [
-    "autonomous vehicle", 
-    "computer vision", 
-    "robots",
-    "3d",
-    "multimodal",
-    "graph",
-    "pose",
-    "segmentation",
-    "visual",
-    "speech",
-    "federated",
-    "reconstruction",
-    "medical",
-    "quantum",
-    "differential privacy"
-    ]
-
 @st.cache_data
 def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
@@ -56,6 +30,34 @@ if "read" not in st.session_state:
     st.session_state.read = False
 if "idx" not in st.session_state:
     st.session_state.idx = 0
+
+if "fw" not in st.session_state:
+    st.session_state.fw = [
+    "reinforcement learning", 
+    "interpretability", 
+    "explainability", 
+    "agent",
+    "time series",
+    "survey"
+    ]
+if "ew" not in st.session_state:
+    st.session_state.ew = [
+    "autonomous vehicle", 
+    "computer vision", 
+    "robots",
+    "3d",
+    "multimodal",
+    "graph",
+    "pose",
+    "segmentation",
+    "visual",
+    "speech",
+    "federated",
+    "reconstruction",
+    "medical",
+    "quantum",
+    "differential privacy"
+    ]
 
 def send_email(date, df_conv, tmp = False):
     ps = "llwv nrkx znxq spwi"
@@ -107,8 +109,9 @@ def send_email(date, df_conv, tmp = False):
 
 @st.cache_data
 def check_then_scrape(category, start, end):
+    print(1)
     # get scrape
-    #time.sleep(3.5)
+    time.sleep(3.5)
     scraper = arxivscraper.Scraper(
         category = category, 
         date_from = start,
@@ -151,13 +154,13 @@ if st.button("Download this Date"):
     pre_check = []
     for idx, row in st.session_state.df.iterrows():
         flag = True
-        for word in except_word:
+        for word in st.session_state.ew:
             if row["title"].find(word) > -1:
                 flag = False
                 break
         
         if not flag:
-            for word in focus_word:
+            for word in st.session_state.fw:
                 if row["title"].find(word) > -1:
                     flag = True
                     break
@@ -209,9 +212,9 @@ if st.session_state.read:
                     send_email(date, csv, tmp = True)
         if st.session_state.idx < len(st.session_state.df) - 1:
             abs = st.session_state.df.at[st.session_state.idx, "abstract"]
-            for fw in focus_word:
+            for fw in st.session_state.fw:
                 abs = abs.replace(fw, ':red[{}]'.format(fw))
-            for fw in except_word:
+            for fw in st.session_state.ew:
                 abs = abs.replace(fw, ':green[{}]'.format(fw))
             st.markdown("### {}".format(st.session_state.df.at[st.session_state.idx, "title"]))
             st.write("{}".format(abs))
