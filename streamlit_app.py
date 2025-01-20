@@ -43,7 +43,6 @@ if "fw" not in st.session_state:
 if "ew" not in st.session_state:
     st.session_state.ew = [
     "autonomous vehicle", 
-    "computer vision", 
     "robots",
     "3d",
     "multimodal",
@@ -56,7 +55,20 @@ if "ew" not in st.session_state:
     "reconstruction",
     "medical",
     "quantum",
-    "differential privacy"
+    "differential privacy",
+    "5g network",
+    "vedio generation",
+    "autonomous driving",
+    "mri",
+    "facial recognition",
+    "remote sensor",
+    "aerial vehicles",
+    "block chain",
+    "uav",
+    "vision",
+    "editing",
+    "smart contract",
+    "robot"
     ]
 
 def send_email(date, df_conv, tmp = False):
@@ -179,11 +191,11 @@ if st.session_state.f_name != "":
                 mime="text/csv",
             )
 
-    st.dataframe(st.session_state.df)
+    #st.dataframe(st.session_state.df)
 
 st.divider()
 if st.session_state.read:
-    my_bar = st.progress(st.session_state.idx / len(st.session_state.df), text= "Read Progress")
+    my_bar = st.progress(st.session_state.idx / len(st.session_state.df), text= "Read Progress : {} / {}".format(st.session_state.idx, len(st.session_state.df)))
     if st.session_state.idx < len(st.session_state.df):
         col1, col2, col3, col4, col5 = st.columns(5)
         with col1:
