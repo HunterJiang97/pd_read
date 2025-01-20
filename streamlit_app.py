@@ -108,7 +108,7 @@ def send_email(date, df_conv, tmp = False):
 @st.cache_data
 def check_then_scrape(category, start, end):
     # get scrape
-    time.sleep(3.5)
+    #time.sleep(3.5)
     scraper = arxivscraper.Scraper(
         category = category, 
         date_from = start,
@@ -145,9 +145,8 @@ if st.button("Download this Date"):
     print(st.session_state.df.head())
     st.session_state.df = st.session_state.df[st.session_state.df.created == date]
     print(len(st.session_state.df))
-    st.session_state.df.reset_index(drop = True, inplace = True)
     st.session_state.df["status"] = None
-    
+    st.session_state.read = True
     
     pre_check = []
     for idx, row in st.session_state.df.iterrows():
@@ -163,10 +162,6 @@ if st.button("Download this Date"):
                     flag = True
                     break
         pre_check.append(int(flag))
-    
-    
-    #st.dataframe(st.session_state.df)
-    st.session_state.read = True
     st.session_state.df["flag"] = pre_check
     st.session_state.df = st.session_state.df.sort_values(by = "flag")
     st.session_state.df.reset_index(drop = True, inplace = True)
