@@ -13,6 +13,32 @@ import arxivscraper
 import time
 import os
 
+focus_word = [
+    "reinforcement learning", 
+    "interpretability", 
+    "explainability", 
+    "agent",
+    "time series",
+    "survey"
+    ]
+except_word = [
+    "autonomous vehicle", 
+    "computer vision", 
+    "robots",
+    "3d",
+    "multimodal",
+    "graph",
+    "pose",
+    "segmentation",
+    "visual",
+    "speech",
+    "federated",
+    "reconstruction",
+    "medical",
+    "quantum",
+    "differential privacy"
+    ]
+
 @st.cache_data
 def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
@@ -79,21 +105,6 @@ def send_email(date, df_conv, tmp = False):
     except Exception as e:
         print(f"Failed to send email: {e}")
 
-#files = os.listdir("data")
-#option = st.selectbox(
-#    "File Available",
-#    files,
-#)
-
-#col11, col12, col13, col14 = st.columns(4)
-#with col11:
-#    if st.button("Check this File"):
-#        st.session_state.f_name = option
-#        st.session_state.df = pd.read_csv("data/{}".format(option))
-#        st.session_state.df["status"] = None
-#        #st.dataframe(st.session_state.df)
-#        st.session_state.read = True
-
 @st.cache_data
 def check_then_scrape(category, start, end):
     # get scrape
@@ -130,16 +141,37 @@ else:
 if st.button("Download this Date"):
     st.session_state.f_name = date
     st.session_state.df = check_then_scrape("cs", date, date1)
-    #st.session_state.df = st.session_state.df[(st.session_state.df.created == date) | (st.session_state.df.updated == date)]
     print(len(st.session_state.df))
     print(st.session_state.df.head())
     st.session_state.df = st.session_state.df[st.session_state.df.created == date]
     print(len(st.session_state.df))
     st.session_state.df.reset_index(drop = True, inplace = True)
     st.session_state.df["status"] = None
+    
+    
+    pre_check = []
+    for idx, row in st.session_state.df.iterrows():
+        flag = True
+        for word in except_word:
+            if row["title"].find(word) > -1:
+                flag = False
+                break
+        
+        if not flag:
+            for word in focus_word:
+                if row["title"].find(word) > -1:
+                    flag = True
+                    break
+        pre_check.append(int(flag))
+    
+    
     #st.dataframe(st.session_state.df)
     st.session_state.read = True
-
+    st.session_state.df["flag"] = pre_check
+    st.session_state.df = st.session_state.df.sort_values(by = "flag")
+    st.session_state.df.reset_index(drop = True, inplace = True)
+    st.session_state.df.loc[st.session_state.df.flag == 0, "status"] = "P"
+    st.session_state.idx = sum(st.session_state.df.status == "P")
 if st.session_state.f_name != "":
     csv1 = convert_df(st.session_state.df)
     st.download_button(
@@ -152,10 +184,9 @@ if st.session_state.f_name != "":
     st.dataframe(st.session_state.df)
 
 st.divider()
-focus_word = ["large language model", "reinforcement learning", "interpretability", "explainability", "agent", "diffusion"]
-except_word = ["autonomous vehicle", "computer vision", "robots"]
 if st.session_state.read:
-    if st.session_state.idx < len(st.session_state.df) - 1:
+    my_bar = st.progress(st.session_state.idx / len(st.session_state.df), text= "Read Progress")
+    if st.session_state.idx < len(st.session_state.df):
         col1, col2, col3, col4, col5 = st.columns(5)
         with col1:
             if st.button("Pass"):
@@ -181,14 +212,15 @@ if st.session_state.read:
                 )
                 if len(st.session_state.df) > 0:
                     send_email(date, csv, tmp = True)
-        abs = st.session_state.df.at[st.session_state.idx, "abstract"]
-        for fw in focus_word:
-            abs = abs.replace(fw, ':red[{}]'.format(fw))
-        for fw in except_word:
-            abs = abs.replace(fw, ':green[{}]'.format(fw))
-        st.markdown("### {}".format(st.session_state.df.at[st.session_state.idx, "title"]))
-        st.write("{}".format(abs))
-        st.write(st.session_state.df.at[st.session_state.idx, "status"])
+        if st.session_state.idx < len(st.session_state.df) - 1:
+            abs = st.session_state.df.at[st.session_state.idx, "abstract"]
+            for fw in focus_word:
+                abs = abs.replace(fw, ':red[{}]'.format(fw))
+            for fw in except_word:
+                abs = abs.replace(fw, ':green[{}]'.format(fw))
+            st.markdown("### {}".format(st.session_state.df.at[st.session_state.idx, "title"]))
+            st.write("{}".format(abs))
+            st.write(st.session_state.df.at[st.session_state.idx, "status"])
     else:
         st.write("Finished Task")
         st.dataframe(st.session_state.df)
