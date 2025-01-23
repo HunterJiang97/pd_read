@@ -72,7 +72,7 @@ if "ew" not in st.session_state:
     "robot",
     "digital twin",
     "forecasting",
-    "graph neural network"，
+    "graph neural network",
     "point cloud",
     "deep fake",
     "deepfake",
