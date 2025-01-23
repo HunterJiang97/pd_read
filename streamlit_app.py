@@ -64,11 +64,25 @@ if "ew" not in st.session_state:
     "remote sensor",
     "aerial vehicles",
     "block chain",
-    "uav",
+    "uav", 
+    "asr",
     "vision",
     "editing",
     "smart contract",
-    "robot"
+    "robot",
+    "digital twin",
+    "forecasting",
+    "graph neural network"，
+    "point cloud",
+    "deep fake",
+    "deepfake",
+    "super resolution",
+    "super-resolution",
+    "wearable",
+    "spatio-temporal",
+    "spatiotemporal",
+    "spatio temporal",
+    "video"
     ]
 
 def send_email(date, df_conv, tmp = False):
